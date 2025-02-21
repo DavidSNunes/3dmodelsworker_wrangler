@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AR Model Viewer</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer"></script>
+    <script src="content.js"></script>
     <style>
         body { text-align: center; font-family: Arial, sans-serif; margin: 20px; }
         model-viewer {
@@ -17,7 +18,7 @@
 <body>
     <h2>View Model in AR</h2>
     <model-viewer 
-        src="https://3dmodels-7c1.pages.dev/models/AUDI_RS6.glb"
+        src= modelUrl
         ar
         ar-modes="webxr scene-viewer quick-look"
         camera-controls
