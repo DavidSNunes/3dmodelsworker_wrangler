@@ -11,9 +11,22 @@
 <body>
     <h1>View the 3D Vehicle</h1>
 
-    <!-- Add model viewer for AUDI_A7 -->
-    <model-viewer src="models/AUDI_A7.glb" alt="Audi A7" auto-rotate camera-controls background-color="#ffffff" style="width: 100%; height: 100vh;"></model-viewer>
-    <model-viewer src="models/AUDI_RS6.glb" alt="Audi RS6" auto-rotate camera-controls background-color="#ffffff" style="width: 100%; height: 100vh;"></model-viewer>
+    <script>
+        // Get the model file name from the URL query string
+        const urlParams = new URLSearchParams(window.location.search);
+        const modelName = urlParams.get('model') || 'AUDI_A7.glb';  // Default model if not specified
+
+        // Update the src of the model-viewer dynamically
+        const modelViewer = document.createElement('model-viewer');
+        modelViewer.setAttribute('src', `models/${modelName}`);
+        modelViewer.setAttribute('alt', modelName);
+        modelViewer.setAttribute('auto-rotate', true);
+        modelViewer.setAttribute('camera-controls', true);
+        modelViewer.style.width = '100%';
+        modelViewer.style.height = '100vh';
+
+        // Append the model-viewer to the body
+        document.body.appendChild(modelViewer);
+    </script>
 </body>
 </html>
-
