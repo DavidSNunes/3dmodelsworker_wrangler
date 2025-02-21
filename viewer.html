@@ -20,9 +20,9 @@
         modelViewer.setAttribute('alt', '3D Vehicle');
         modelViewer.setAttribute('auto-rotate', true);
         modelViewer.setAttribute('camera-controls', true);
-        modelViewer.setAttribute('ar', true);                // Enable AR
-        modelViewer.setAttribute('ar-modes', 'scene-viewer quick-look');  // AR Modes for Android/iOS
-        modelViewer.setAttribute('ar-scale', 'auto');        // Auto scale for AR
+        modelViewer.setAttribute('ar', true);                 // Enable AR
+        modelViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look'); // iOS Quick Look support
+        modelViewer.setAttribute('ar-scale', 'auto');         // Auto scale for AR
 
         // Debugging step to check if AR is enabled
         modelViewer.addEventListener('load', () => {
