@@ -7,20 +7,23 @@
     <script type="module" src="https://unpkg.com/@google/model-viewer"></script>
     <style>
         body { text-align: center; font-family: Arial, sans-serif; margin: 20px; }
+        model-viewer {
+            width: 100%;
+            max-width: 500px;
+            height: 400px;
+        }
     </style>
 </head>
 <body>
     <h2>View Model in AR</h2>
-    <script>
-        function modelo(){
-            <model-viewer src="https://models-ea1.pages.dev/2020_audi_rs6_avant.glb"
-                  ar
-                  ar-modes="webxr scene-viewer quick-look"
-                  camera-controls
-                  auto-rotate
-                  style="width: 100%; max-width: 500px; height: 400px;">
-            </model-viewer>
-        }
-</script>
+    <model-viewer 
+        id="modelViewer"
+        src="https://3dmodels-7c1.pages.dev/models/AUDI_RS6.glb"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        camera-controls
+        auto-rotate>
+    </model-viewer>
 </body>
 </html>
+
