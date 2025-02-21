@@ -16,12 +16,28 @@
 </head>
 <body>
     <h2>View Model in AR</h2>
-    <model-viewer 
-        src="https://3dmodels-7c1.pages.dev/models/AUDI_RS6.glb"
+
+    <!-- The model-viewer element that will load the 3D model -->
+    <model-viewer id="modelViewer"
         ar
         ar-modes="webxr scene-viewer quick-look"
         camera-controls
-        auto-rotate>
+        auto-rotate
+        style="width: 100%; max-width: 500px; height: 400px;">
     </model-viewer>
+
+    <script>
+        // Get the model parameter from the URL query string
+        const urlParams = new URLSearchParams(window.location.search);
+        const modelFile = urlParams.get("model");
+
+        // If there's a model specified, load it into the model-viewer element
+        if (modelFile) {
+            const modelViewer = document.getElementById("modelViewer");
+            modelViewer.setAttribute("src", `https://3dmodels-7c1.pages.dev/models/${modelFile}`);
+        } else {
+            console.warn("No model file specified in the URL.");
+        }
+    </script>
 </body>
 </html>
