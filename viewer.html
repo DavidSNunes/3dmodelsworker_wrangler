@@ -14,15 +14,26 @@
         const urlParams = new URLSearchParams(window.location.search);
         const modelName = urlParams.get('model') || 'AUDI_A7.glb';  // Default model if not specified
 
+        // Check if the model name is valid (debugging step)
+        console.log("Model to load:", modelName);
+
         // Create a model-viewer element and set its attributes
         const modelViewer = document.createElement('model-viewer');
-        modelViewer.setAttribute('src', `models/${modelName}`);
+        modelViewer.setAttribute('src', `https://3dmodels-7c1.pages.dev/models/${modelName}`);
         modelViewer.setAttribute('alt', modelName);
         modelViewer.setAttribute('auto-rotate', true);
         modelViewer.setAttribute('camera-controls', true);
-        modelViewer.setAttribute('ar', true);               // Enable AR
-        modelViewer.setAttribute('ar-modes', 'scene-viewer quick-look'); // AR Modes for different platforms
+        modelViewer.setAttribute('ar', true);                // Enable AR
+        modelViewer.setAttribute('ar-modes', 'scene-viewer quick-look');  // AR Modes for Android/iOS
         modelViewer.setAttribute('ar-scale', 'auto');        // Auto scale for AR
+
+        // Debugging step to check the model is being loaded
+        modelViewer.addEventListener('load', () => {
+            console.log("Model loaded successfully");
+        });
+        modelViewer.addEventListener('error', (e) => {
+            console.log("Error loading model:", e);
+        });
 
         modelViewer.style.width = '100%';
         modelViewer.style.height = '100vh';
