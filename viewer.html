@@ -3,41 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Vehicle Viewer</title>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.10.0/dist/model-viewer.min.js"></script>
+    <title>AR Model Viewer</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer"></script>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; margin: 20px; }
+    </style>
 </head>
 <body>
-    <h1>View the 3D Vehicle</h1>
-
+    <h2>View Model in AR</h2>
     <script>
-        // Get the model file name from the URL query string
-        const urlParams = new URLSearchParams(window.location.search);
-        const modelName = urlParams.get('model') || 'AUDI_A7.glb';  // Default model if not specified
-
-        // Create a model-viewer element
-        const modelViewer = document.createElement('model-viewer');
-        modelViewer.setAttribute('src', `https://3dmodels-7c1.pages.dev/models/${modelName}`);
-        modelViewer.setAttribute('alt', '3D Vehicle');
-        modelViewer.setAttribute('auto-rotate', true);
-        modelViewer.setAttribute('camera-controls', true);
-        modelViewer.setAttribute('ar', true);                 // Enable AR
-        modelViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look'); // iOS Quick Look support
-        modelViewer.setAttribute('ar-scale', 'auto');         // Auto scale for AR
-
-        // Debugging step to check if AR is enabled
-        modelViewer.addEventListener('load', () => {
-            console.log("Model loaded successfully");
-        });
-        modelViewer.addEventListener('error', (e) => {
-            console.log("Error loading model:", e);
-        });
-
-        modelViewer.style.width = '100%';
-        modelViewer.style.height = '100vh';
-
-        // Append the model-viewer to the body
-        document.body.appendChild(modelViewer);
-    </script>
+        function modelo(){
+            <model-viewer src="https://models-ea1.pages.dev/2020_audi_rs6_avant.glb"
+                  ar
+                  ar-modes="webxr scene-viewer quick-look"
+                  camera-controls
+                  auto-rotate
+                  style="width: 100%; max-width: 500px; height: 400px;">
+            </model-viewer>
+        }
+</script>
 </body>
 </html>
-
