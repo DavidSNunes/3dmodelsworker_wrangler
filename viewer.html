@@ -42,11 +42,11 @@
     </model-viewer>
 
     <script>
-        // Get the model parameter from the URL query string
+        //get the model from the URL
         const urlParams = new URLSearchParams(window.location.search);
         const modelFile = urlParams.get("model");
 
-        // If there's a model specified, load it into the model-viewer element
+        //If a model exists, load it into the model-viewer element
         if (modelFile) {
             const modelViewer = document.getElementById("modelViewer");
             modelViewer.setAttribute("src", `https://3dmodels-7c1.pages.dev/models/${modelFile}`);
