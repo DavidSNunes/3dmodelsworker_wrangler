@@ -21,10 +21,10 @@
             margin-bottom: 20px;
         }
         model-viewer {
-            width: 100vw; /* Make it 80% of the viewport width */
-            max-width: 1000px; /* Maximum size for large screens */
-            height: 60vh; /* 60% of the viewport height */
-            max-height: 600px; /* Prevent it from getting too big */
+            width: 80vw;
+            max-width: 1000px;
+            height: 60vh;
+            max-height: 600px;
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -34,7 +34,6 @@
 <body>
     <h2>View Model in AR</h2>
 
-    <!-- The model-viewer element that will load the 3D model -->
     <model-viewer id="modelViewer"
         ar
         ar-modes="webxr scene-viewer quick-look"
