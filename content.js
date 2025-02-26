@@ -11,7 +11,7 @@
   console.log(`Detected Model Code: ${modelCode}`);
 
   // Fetch the corresponding model path from the Cloudflare Worker API
-  const response = await fetch(`https://my-worker.davidsousanunes41.workers.dev/get-model?code=${modelCode}`);
+  const response = await fetch(`https://my-worker.davidsousanunes41.workers.dev/get-model?model=${modelCode}`);
   if (!response.ok) return console.warn("Failed to fetch model from database.");
 
   const data = await response.json();
