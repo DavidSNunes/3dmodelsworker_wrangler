@@ -18,7 +18,7 @@
   if (!data.modelPath) return console.warn("Model path not found in database.");
   
   // Construct the 3D model viewer URL
-  const modelViewerUrl = `https://3dmodels-7c1.pages.dev/viewer.html?model=${data.modelPath}`;
+  const modelViewerUrl = `https://3dmodels-7c1.pages.dev/viewer.html?model=${encodeURIComponent(data.modelPath)}`;
   
   // Generate the QR code dynamically
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(modelViewerUrl)}`;
