@@ -3,12 +3,15 @@
 (async function() {
   const url = window.location.href;
   const configBase = "https://configurador.audi.pt/cc-pt/pt_PT_AUDI23/A/auv/";
-  const modelMatch = url.match(/[A-B]?\d{2}[A-B]?/); // Extracts the model code (e.g., A61, A70)
 
-  if (!modelMatch) return; // Exit if no model code is found
-  
-  const modelCode = modelMatch[0];
-  console.log(`Detected Model Code: ${modelCode}`);
+  // Updated regex: matches model codes like A10, B30, 51B, etc.
+  const modelMatch = url.match(/\/([A-B]?\d{2}[A-B]?)\/|\/([A-B]?\d{2}[A-B]?)\?/);
+
+  if (!modelMatch) return console.warn("No model code found."); // Exit if no model code is found
+
+  // Only the model code should be captured here (either group 1 or group 2)
+  const modelCode = modelMatch[1] || modelMatch[2];
+  console.log(`Detected Model Code: ${modelCode}`); // Should log only the model code like A10, B30, etc.
 
   // Fetch the corresponding model path from the Cloudflare Worker API
   const response = await fetch(`https://my-worker.davidsousanunes41.workers.dev/?model=${modelCode}`);
