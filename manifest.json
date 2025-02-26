@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Audi AR QR Code Injector",
+  "name": "Audi AR QR Code Injector 2",
   "version": "1.1",
   "permissions": [
     "scripting", 
