@@ -3,7 +3,7 @@
 (async function() {
   const url = window.location.href;
   const configBase = "https://configurador.audi.pt/cc-pt/pt_PT_AUDI23/A/auv/";
-  const modelMatch = url.match(/A\d{2}/); // Extracts the model code (e.g., A61, A70)
+  const modelMatch = url.match(/[A-B]?\d{2}[A-B]?/); // Extracts the model code (e.g., A61, A70)
 
   if (!modelMatch) return; // Exit if no model code is found
   
