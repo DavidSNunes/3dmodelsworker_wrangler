@@ -3,12 +3,12 @@
   const configBase = "https://configurador.audi.pt/cc-pt/pt_PT_AUDI23/A/auv/";   //base URL 
 
   
-  //looks for model code in the URL
+  //extracts the model code in the URL
   const modelMatch = url.match(/\/([A-B]?\d{2}[A-B]?)\/|\/([A-B]?\d{2}[A-B]?)\?/); 
   if (!modelMatch) return console.warn("No model code found."); 
 
   
-  //registers the model code in the URL according to the parameters
+  //registers the model code from the URL according to the parameters
   const modelCode = modelMatch[1] || modelMatch[2]; 
   console.log(`Detected Model Code: ${modelCode}`); 
 
