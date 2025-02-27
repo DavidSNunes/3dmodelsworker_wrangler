@@ -1,0 +1,9 @@
+name = "3dmodelsworker"
+main = "src/index.js"
+compatibility_date = "2024-02-25"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "3d_models"
+database_id = "802a36ab-c825-43bd-81a8-8ce5fc91eba0"
+
