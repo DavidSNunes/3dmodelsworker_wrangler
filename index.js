@@ -96,7 +96,8 @@ function corsHeaders() {
   return {
       "Access-Control-Allow-Origin": "*",  // Allow all origins
       "Access-Control-Allow-Methods": "POST, OPTIONS", // Allow only POST and OPTIONS
-      "Access-Control-Allow-Headers": "Content-Type" // Allow Content-Type header
+      "Access-Control-Allow-Headers": "Content-Type", // Allow Content-Type header
+      "Access-Control-Allow-Credentials": "true" // Allow credentials, optional depending on your use case
   };
 }
 
