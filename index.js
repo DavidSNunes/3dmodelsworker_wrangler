@@ -102,7 +102,7 @@ async function findModelCodeFromUrl(url) {
 
 // Fetch model file from KV database
 async function getModelFileFromKV(modelCode) {
-  const modelMapping = await DB.get(modelCode);
+  const modelMapping = await binding.get(modelCode);
   return modelMapping || null;
 }
 
