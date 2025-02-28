@@ -1,3 +1,15 @@
+// Handle the fetch event
+addEventListener("fetch", event => {
+  const url = new URL(event.request.url);
+  
+  // Check if the path is '/process', and route the request accordingly
+  if (url.pathname === "/process") {
+    event.respondWith(handleRequest(event.request));  // Handle /process endpoint
+  } else {
+    event.respondWith(new Response("Not Found", { status: 404 }));
+  }
+});
+
 async function handleRequest(req) {
   // Handle CORS preflight (OPTIONS request)
   if (req.method === "OPTIONS") {
@@ -109,8 +121,3 @@ function corsHeaders() {
       "Access-Control-Allow-Headers": "Content-Type" // Allow Content-Type header
   };
 }
-
-// Register the fetch event listener
-addEventListener("fetch", event => {
-  event.respondWith(handleRequest(event.request));
-});
