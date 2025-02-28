@@ -14,7 +14,7 @@ async function handleRequest(req) {
 
   try {
       const reqBody = await req.json(); // Parse JSON body
-      const url = reqBody.url;
+      const url = reqBody.url; // Get the full URL from the request body
 
       if (!url) {
           return new Response("URL is required", { 
@@ -37,7 +37,7 @@ async function handleRequest(req) {
           });
       }
 
-      // Fetch model data from KV
+      // Fetch model file from KV using modelCode
       const modelFile = await getModelFileFromKV(modelCode);
 
       if (!modelFile) {
@@ -50,7 +50,10 @@ async function handleRequest(req) {
       // Construct the model viewer link
       const modelLink = `https://3dmodelsproject.pages.dev/viewer.html?modelCode=${modelCode}&file=${modelFile}`;
 
-      return new Response(JSON.stringify({ modelLink }), {
+      // Generate QR Code URL (if you have logic for that)
+      const qrCodeUrl = generateQRCodeUrl(modelLink);
+
+      return new Response(JSON.stringify({ qrCodeUrl, modelLink }), {
           headers: {
               "Content-Type": "application/json",
               ...corsHeaders(),
@@ -89,6 +92,13 @@ async function findModelCodeFromUrl(url) {
 async function getModelFileFromKV(modelCode) {
   const modelMapping = await DB.get(modelCode);
   return modelMapping || null;
+}
+
+// QR Code generation logic (if needed)
+function generateQRCodeUrl(modelLink) {
+  // Example using a simple QR code generator service:
+  const qrCodeBaseUrl = "https://api.qrserver.com/v1/create-qr-code/";
+  return `${qrCodeBaseUrl}?data=${encodeURIComponent(modelLink)}&size=150x150`;
 }
 
 // CORS Headers function
