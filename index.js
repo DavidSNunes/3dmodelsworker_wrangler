@@ -29,7 +29,7 @@ async function handleRequest(req) {
 
       if (!modelCode) {
           // No model code found → Serve default page
-          const defaultPage = await fetch("https://3dmodels-7c1.pages.dev/default.html");
+          const defaultPage = await fetch("https://3dmodelsproject.pages.dev/default");
           return new Response(await defaultPage.text(), {
               headers: {
                   "Content-Type": "text/html",
@@ -49,7 +49,7 @@ async function handleRequest(req) {
       }
 
       // Construct the model viewer link
-      const modelLink = `https://3dmodels-7c1.pages.dev/viewer.html?modelCode=${modelCode}&file=${modelFile}`;
+      const modelLink = `https://3dmodelsproject.pages.dev/viewer.html?modelCode=${modelCode}&file=${modelFile}`;
 
       return new Response(JSON.stringify({ modelLink }), {
           headers: {
