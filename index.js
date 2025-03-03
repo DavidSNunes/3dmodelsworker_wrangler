@@ -34,7 +34,7 @@ async function handleRequest(req) {
 // Parse URL and extract site key & model code
 function parseUrl(url) {
   const sites = {
-      "configurador.audi.pt": "configurador/audi",
+      "configurador.audi.pt": "configurador.audi.pt",
       "www.worten.pt": "worten.pt/produtos"
   };
 
