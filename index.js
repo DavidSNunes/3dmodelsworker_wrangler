@@ -34,13 +34,13 @@ async function handleRequest(req) {
 // Parse URL and extract site key & model code
 function parseUrl(url) {
   const sites = {
-      "configurador.audi.pt": "audi/configurator",
-      "www.worten.pt": "worten"
+      "configurador.audi.pt": "configurador/audi",
+      "www.worten.pt": "worten.pt/produtos"
   };
 
   for (const [domain, siteKey] of Object.entries(sites)) {
       if (url.includes(domain)) {
-          const modelCode = url.match(/(20A|30A|40A|50B|laptop|monitor)/)?.[0] || null;
+          const modelCode = url.match(/(20A|30A|40A|50B|8110317|8110317)/)?.[0] || null;
           return { siteKey, modelCode };
       }
   }
@@ -50,7 +50,7 @@ function parseUrl(url) {
 
 // Fetch site data from KV
 async function getSiteDataFromKV(siteKey) {
-  const rawData = await KV_MODELS.get(siteKey);
+  const rawData = await binding.get(siteKey);
   return rawData ? JSON.parse(rawData) : null;
 }
 
