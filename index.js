@@ -40,7 +40,7 @@ function parseUrl(url) {
 
   for (const [domain, siteKey] of Object.entries(sites)) {
       if (url.includes(domain)) {
-          const modelCode = url.match(/(20A|30A|40A|50B|8110317|8110317)/)?.[0] || null;
+          const modelCode = url.match(/(20A|30A|40A|50B|8110317|7817350)/)?.[0] || null;
           return { siteKey, modelCode };
       }
   }
