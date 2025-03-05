@@ -3,35 +3,37 @@ addEventListener("fetch", event => {
 });
 
 async function handleRequest(req) {
-  if (req.method === "OPTIONS") return handleCorsPreflight();
-  if (req.method !== "POST") return new Response("Method Not Allowed", { status: 405, headers: corsHeaders() });
+  if (req.method !== "GET") return new Response("Method Not Allowed", { status: 405 });
 
   try {
-      const { url } = await req.json();
-      if (!url) return new Response("URL is required", { status: 400, headers: corsHeaders() });
+      const url = new URL(req.url);
+      const hashbangIndex = url.href.indexOf("#!");
+      
+      if (hashbangIndex === -1) return new Response("Invalid request", { status: 400 });
 
-      const { siteKey, modelCode } = parseUrl(url);
-      if (!siteKey) return new Response("Site not supported", { status: 404, headers: corsHeaders() });
+      const originalUrl = decodeURIComponent(url.href.substring(hashbangIndex + 2));
+      if (!originalUrl.startsWith("http")) return new Response("Invalid URL format", { status: 400 });
+
+      const { siteKey, modelCode } = parseUrl(originalUrl);
+      if (!siteKey) return new Response("Site not supported", { status: 404 });
 
       const siteData = await getSiteDataFromKV(siteKey);
-      if (!siteData) return new Response("Site configuration not found", { status: 404, headers: corsHeaders() });
+      if (!siteData) return new Response("Site configuration not found", { status: 404 });
 
       const modelFile = siteData.models[modelCode] || null;
       const modelPageUrl = modelFile
           ? `https://3dmodelsproject.pages.dev/viewer.html?modelCode=${modelCode}&file=${modelFile}`
           : siteData.default;
 
-      return new Response(JSON.stringify({ qrCodeUrl: generateQRCodeUrl(modelPageUrl) }), {
-          headers: { "Content-Type": "application/json", ...corsHeaders() }
-      });
+      return Response.redirect(modelPageUrl, 302);
 
   } catch (error) {
       console.error("Worker Error:", error);
-      return new Response("Internal Server Error", { status: 500, headers: corsHeaders() });
+      return new Response("Internal Server Error", { status: 500 });
   }
 }
 
-// Parse URL and extract site key & model code
+// Extract site key & model code from URL
 function parseUrl(url) {
   const sites = {
       "configurador.audi.pt": "configurador.audi.pt",
@@ -52,19 +54,4 @@ function parseUrl(url) {
 async function getSiteDataFromKV(siteKey) {
   const rawData = await binding.get(siteKey);
   return rawData ? JSON.parse(rawData) : null;
-}
-
-// Generate QR code URL
-function generateQRCodeUrl(link) {
-  return `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(link)}&size=150x150`;
-}
-
-// Handle CORS preflight
-function handleCorsPreflight() {
-  return new Response(null, { status: 204, headers: corsHeaders() });
-}
-
-// CORS Headers
-function corsHeaders() {
-  return { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" };
 }
