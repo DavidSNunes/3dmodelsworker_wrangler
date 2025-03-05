@@ -7,14 +7,21 @@ async function handleRequest(req) {
 
   try {
       const url = new URL(req.url);
+
+      // Check if URL contains the '#!' fragment
       const hashbangIndex = url.href.indexOf("#!");
-      
-      if (hashbangIndex === -1) return new Response("Invalid request", { status: 400 });
+      console.log("Hashbang index:", hashbangIndex);  // Debugging log
+
+      if (hashbangIndex === -1) return new Response("Invalid request: Missing '#!'", { status: 400 });
 
       const originalUrl = decodeURIComponent(url.href.substring(hashbangIndex + 2));
+      console.log("Original URL:", originalUrl);  // Debugging log
+
       if (!originalUrl.startsWith("http")) return new Response("Invalid URL format", { status: 400 });
 
       const { siteKey, modelCode } = parseUrl(originalUrl);
+      console.log("Parsed siteKey:", siteKey, "Model Code:", modelCode);  // Debugging log
+
       if (!siteKey) return new Response("Site not supported", { status: 404 });
 
       const siteData = await getSiteDataFromKV(siteKey);
