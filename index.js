@@ -8,11 +8,13 @@ async function handleRequest(req) {
   try {
       const url = new URL(req.url);
       const hashbangIndex = url.href.indexOf("#!");
-      
-      if (hashbangIndex === -1) return new Response("Invalid request", { status: 400 });
+
+      if (hashbangIndex === -1) return new Response("Invalid request: Missing '#!'", { status: 400 });
 
       const originalUrl = decodeURIComponent(url.href.substring(hashbangIndex + 2));
       if (!originalUrl.startsWith("http")) return new Response("Invalid URL format", { status: 400 });
+
+      console.log("Extracted URL:", originalUrl);
 
       const { siteKey, modelCode } = parseUrl(originalUrl);
       if (!siteKey) return new Response("Site not supported", { status: 404 });
@@ -20,11 +22,15 @@ async function handleRequest(req) {
       const siteData = await getSiteDataFromKV(siteKey);
       if (!siteData) return new Response("Site configuration not found", { status: 404 });
 
-      const modelFile = siteData.models[modelCode] || null;
+      const modelFile = modelCode ? siteData.models[modelCode] || null : null;
+      console.log("Model Code:", modelCode, "| Model File:", modelFile);
+
+      // Redirect to viewer.html if model exists, otherwise to default page
       const modelPageUrl = modelFile
           ? `https://3dmodelsproject.pages.dev/viewer.html?modelCode=${modelCode}&file=${modelFile}`
           : siteData.default;
 
+      console.log("Redirecting to:", modelPageUrl);
       return Response.redirect(modelPageUrl, 302);
 
   } catch (error) {
@@ -42,8 +48,8 @@ function parseUrl(url) {
 
   for (const [domain, siteKey] of Object.entries(sites)) {
       if (url.includes(domain)) {
-          // Match model codes like 20A, 30A, etc. or specific product IDs like 8110317
-          const modelCode = url.match(/(20A|30A|40A|50B|8110317|7817350)/)?.[0] || null;
+          // Match model codes like A10, 20A, etc., or specific product IDs like 8110317
+          const modelCode = url.match(/(A10|20A|30A|40A|50B|8110317|7817350)/)?.[0] || null;
           return { siteKey, modelCode };
       }
   }
@@ -53,6 +59,11 @@ function parseUrl(url) {
 
 // Fetch site data from KV
 async function getSiteDataFromKV(siteKey) {
-  const rawData = await binding.get(siteKey);
-  return rawData ? JSON.parse(rawData) : null;
+  try {
+      const rawData = await MODELS_KV.get(siteKey);
+      return rawData ? JSON.parse(rawData) : null;
+  } catch (error) {
+      console.error("KV Fetch Error:", error);
+      return null;
+  }
 }
