@@ -42,6 +42,7 @@ function parseUrl(url) {
 
   for (const [domain, siteKey] of Object.entries(sites)) {
       if (url.includes(domain)) {
+          // Match model codes like 20A, 30A, etc. or specific product IDs like 8110317
           const modelCode = url.match(/(20A|30A|40A|50B|8110317|7817350)/)?.[0] || null;
           return { siteKey, modelCode };
       }
