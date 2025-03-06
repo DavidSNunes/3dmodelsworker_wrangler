@@ -11,15 +11,13 @@ async function handleRequest(req) {
     const url = new URL(req.url);
     console.log("Incoming Request URL:", url.href);
 
-    // Extract the part after #!
-    const parts = url.href.split("#!");
-    if (parts.length < 2) {
-      console.error("Missing '#!' separator in URL");
-      return new Response("Invalid request: Missing '#!'", { status: 400 });
+    // Extract ?url= parameter
+    const originalUrl = url.searchParams.get("url");
+    if (!originalUrl) {
+      console.error("Missing 'url' parameter in query");
+      return new Response("Invalid request: Missing 'url' parameter", { status: 400 });
     }
 
-    // Decode the original page URL
-    const originalUrl = decodeURIComponent(parts[1]);
     console.log("Extracted Original URL:", originalUrl);
 
     if (!originalUrl.startsWith("http")) {
@@ -56,37 +54,5 @@ async function handleRequest(req) {
   } catch (error) {
     console.error("Worker Error:", error);
     return new Response("Internal Server Error", { status: 500 });
-  }
-}
-
-// Extracts the site key & model code from a given URL
-function parseUrl(url) {
-  const sites = {
-    "configurador.audi.pt": "configurador.audi.pt",
-    "worten.pt": "worten.pt/produtos"
-  };
-
-  const hostname = new URL(url).hostname.replace("www.", ""); // Normalize domain
-
-  for (const [domain, siteKey] of Object.entries(sites)) {
-    if (hostname.includes(domain)) {
-      // Extract model codes (Audi car codes or Worten product IDs)
-      const modelCodeMatch = url.match(/(?:20A|30A|40A|50B|\d{7})/);
-      const modelCode = modelCodeMatch ? modelCodeMatch[0] : null;
-      return { siteKey, modelCode };
-    }
-  }
-
-  return { siteKey: null, modelCode: null };
-}
-
-// Fetches site data from Cloudflare KV
-async function getSiteDataFromKV(siteKey) {
-  try {
-    const rawData = await MODELS_KV.get(siteKey);
-    return rawData ? JSON.parse(rawData) : null;
-  } catch (err) {
-    console.error("KV Fetch Error:", err);
-    return null;
   }
 }
