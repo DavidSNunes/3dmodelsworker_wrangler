@@ -9,23 +9,17 @@ async function handleRequest(req) {
 
   try {
     const url = new URL(req.url);
-    
     console.log("Incoming Request URL:", url.href);
 
-    // Ensure URL contains "#!"
-    const separator = "#!";
-    if (!url.href.includes(separator)) {
-      return new Response("Invalid request: Missing '#!'", { status: 400 });
-    }
+    // Extract the original URL after "#!"
+    const parts = url.href.split("#!");
+    const originalUrl = parts.length > 1 ? decodeURIComponent(parts[1]) : null;
 
-    // Extract the original website URL after "#!"
-    const splitUrl = url.href.split(separator);
-    if (splitUrl.length < 2 || !splitUrl[1].startsWith("http")) {
+    console.log("Extracted Original URL:", originalUrl);
+
+    if (!originalUrl || !originalUrl.startsWith("http")) {
       return new Response("Invalid URL format", { status: 400 });
     }
-    
-    const originalUrl = decodeURIComponent(splitUrl[1]);
-    console.log("Extracted Original URL:", originalUrl);
 
     // Parse the site key & model code
     const { siteKey, modelCode } = parseUrl(originalUrl);
@@ -64,7 +58,8 @@ function parseUrl(url) {
   for (const [domain, siteKey] of Object.entries(sites)) {
     if (url.includes(domain)) {
       // Extract model codes (Audi car codes or Worten product IDs)
-      const modelCode = url.match(/(20A|30A|40A|50B|8110317|7817350)/)?.[0] || null;
+      const modelCodeMatch = url.match(/(?:20A|30A|40A|50B|8110317|7817350)/);
+      const modelCode = modelCodeMatch ? modelCodeMatch[0] : null;
       return { siteKey, modelCode };
     }
   }
