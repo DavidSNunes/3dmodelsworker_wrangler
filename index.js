@@ -11,29 +11,40 @@ async function handleRequest(req) {
     const url = new URL(req.url);
     console.log("Incoming Request URL:", url.href);
 
-    // Extract the original URL after "#!"
+    // Extract the part after #!
     const parts = url.href.split("#!");
-    const originalUrl = parts.length > 1 ? decodeURIComponent(parts[1]) : null;
+    if (parts.length < 2) {
+      console.error("Missing '#!' separator in URL");
+      return new Response("Invalid request: Missing '#!'", { status: 400 });
+    }
 
+    // Decode the original page URL
+    const originalUrl = decodeURIComponent(parts[1]);
     console.log("Extracted Original URL:", originalUrl);
 
-    if (!originalUrl || !originalUrl.startsWith("http")) {
+    if (!originalUrl.startsWith("http")) {
+      console.error("Invalid URL format:", originalUrl);
       return new Response("Invalid URL format", { status: 400 });
     }
 
-    // Parse the site key & model code
+    // Parse site key & model code
     const { siteKey, modelCode } = parseUrl(originalUrl);
+    console.log("Extracted Site Key:", siteKey);
+    console.log("Extracted Model Code:", modelCode);
+
     if (!siteKey) {
+      console.error("Site not supported:", originalUrl);
       return new Response("Site not supported", { status: 404 });
     }
 
     // Fetch site configuration from KV
     const siteData = await getSiteDataFromKV(siteKey);
     if (!siteData) {
+      console.error("Site configuration not found for:", siteKey);
       return new Response("Site configuration not found", { status: 404 });
     }
 
-    // Retrieve the model file or default page
+    // Retrieve the model file or use the default page
     const modelFile = siteData.models[modelCode] || null;
     const viewerPageUrl = modelFile
       ? `https://3dmodelsproject.pages.dev/viewer.html?modelCode=${modelCode}&file=${modelFile}`
@@ -52,13 +63,15 @@ async function handleRequest(req) {
 function parseUrl(url) {
   const sites = {
     "configurador.audi.pt": "configurador.audi.pt",
-    "www.worten.pt": "worten.pt/produtos"
+    "worten.pt": "worten.pt/produtos"
   };
 
+  const hostname = new URL(url).hostname.replace("www.", ""); // Normalize domain
+
   for (const [domain, siteKey] of Object.entries(sites)) {
-    if (url.includes(domain)) {
+    if (hostname.includes(domain)) {
       // Extract model codes (Audi car codes or Worten product IDs)
-      const modelCodeMatch = url.match(/(?:20A|30A|40A|50B|8110317|7817350)/);
+      const modelCodeMatch = url.match(/(?:20A|30A|40A|50B|\d{7})/);
       const modelCode = modelCodeMatch ? modelCodeMatch[0] : null;
       return { siteKey, modelCode };
     }
