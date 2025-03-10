@@ -47,7 +47,7 @@ async function handleModelRequest(url) {
   }
 
   // Generate the WebXR viewer URL with the correct model
-  const viewerURL = `https://3dmodelsproject.pages.dev/viewer.html?model=${modelLink}`;
+  const viewerURL = `https://3dmodelsproject.pages.dev/webxr.html?model=${modelLink}`;
   
   return Response.redirect(viewerURL, 302);
 }
