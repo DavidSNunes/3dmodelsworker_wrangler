@@ -1,79 +1,64 @@
-addEventListener("fetch", event => {
-  event.respondWith(handleRequest(event.request));
-});
+export default {
+  async fetch(req) {
+    const url = new URL(req.url);
+    
+    // Serve static files from Cloudflare Pages
+    if (url.pathname === "/webxr.js") {
+      return serveStaticFile("webxr.js", "application/javascript");
+    }
 
-async function handleRequest(req) {
-  if (req.method !== "GET") {
-      return new Response("Method Not Allowed", { status: 405 });
+    if (url.pathname === "/viewer.html") {
+      return serveStaticFile("viewer.html", "text/html");
+    }
+
+    // Handle model retrieval logic
+    return handleModelRequest(url);
+  }
+};
+
+// Fetch static files from your Cloudflare Pages (GitHub-hosted files)
+async function serveStaticFile(filePath, contentType) {
+  const pagesURL = `https://3dmodelsproject.pages.dev/${filePath}`;
+  const response = await fetch(pagesURL);
+
+  if (!response.ok) {
+    return new Response("File Not Found", { status: 404 });
   }
 
-  try {
-      const url = new URL(req.url);
-      const originalUrl = url.searchParams.get("url");
-
-      if (!originalUrl || !originalUrl.startsWith("http")) {
-          return new Response("Invalid request: Missing 'url' parameter", { status: 400 });
-      }
-
-      const { siteKey, modelCode } = parseUrl(originalUrl);
-      if (!siteKey) {
-          return serveHtmlPage("https://3dmodelsproject.pages.dev/default.html");
-      }
-
-      const siteData = await getSiteDataFromKV(siteKey);
-      if (!siteData || !siteData.models[modelCode]) {
-          return serveHtmlPage("https://3dmodelsproject.pages.dev/default.html");
-      }
-
-      return serveWebXRPage(modelCode, siteData.models[modelCode]);
-
-  } catch (error) {
-      console.error("🔥 Worker Error:", error);
-      return new Response("Internal Server Error", { status: 500 });
-  }
+  return new Response(await response.text(), {
+    headers: { "Content-Type": contentType }
+  });
 }
 
-function parseUrl(url) {
-  const sites = { "worten.pt": "worten.pt/produtos" };
-  const hostname = new URL(url).hostname.replace("www.", "");
+// Process model requests and return WebXR page with correct model
+async function handleModelRequest(url) {
+  const params = new URLSearchParams(url.search);
+  const modelCode = params.get("model");
 
-  for (const [domain, siteKey] of Object.entries(sites)) {
-      if (hostname.includes(domain)) {
-          const modelCodeMatch = url.match(/\d{7}/);
-          return { siteKey, modelCode: modelCodeMatch ? modelCodeMatch[0] : null };
-      }
+  if (!modelCode) {
+    return new Response("Model code not provided", { status: 400 });
   }
-  return { siteKey: null, modelCode: null };
+
+  // Retrieve the model link from Cloudflare KV
+  const modelLink = await getModelFromKV(modelCode);
+  
+  if (!modelLink) {
+    return new Response("Model not found", { status: 404 });
+  }
+
+  // Generate the WebXR viewer URL with the correct model
+  const viewerURL = `https://3dmodelsproject.pages.dev/viewer.html?model=${modelLink}`;
+  
+  return Response.redirect(viewerURL, 302);
 }
 
-async function getSiteDataFromKV(siteKey) {
+// Lookup model in Cloudflare KV
+async function getModelFromKV(modelCode) {
   try {
-      const rawData = await binding.get(siteKey);
-      return rawData ? JSON.parse(rawData) : null;
+    const kvValue = await MODELS_KV.get(modelCode);
+    return kvValue ? kvValue : null;
   } catch (err) {
-      console.error("KV Fetch Error:", err);
-      return null;
+    console.error("KV Fetch Error:", err);
+    return null;
   }
-}
-
-async function serveHtmlPage(pageUrl) {
-  const response = await fetch(pageUrl);
-  return new Response(await response.text(), { headers: { "Content-Type": "text/html" } });
-}
-
-async function serveWebXRPage(modelCode, modelData) {
-  const viewerHtml = await fetch("https://3dmodelsproject.pages.dev/webxr.html");
-  let content = await viewerHtml.text();
-
-  const modelDataEncoded = encodeURIComponent(JSON.stringify(modelData));
-  content = content.replace("</body>", `
-      <script>
-          const params = new URLSearchParams(window.location.search);
-          params.set("model", "${modelCode}");
-          params.set("data", "${modelDataEncoded}");
-          window.history.replaceState({}, "", "?" + params.toString());
-      </script>
-  </body>`);
-
-  return new Response(content, { headers: { "Content-Type": "text/html" } });
 }
