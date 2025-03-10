@@ -55,7 +55,7 @@ async function handleModelRequest(url) {
 // Lookup model in Cloudflare KV
 async function getModelFromKV(modelCode) {
   try {
-    const kvValue = await MODELS_KV.get(modelCode);
+    const kvValue = await binding.get(modelCode);
     return kvValue ? kvValue : null;
   } catch (err) {
     console.error("KV Fetch Error:", err);
