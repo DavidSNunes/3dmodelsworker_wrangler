@@ -1,5 +1,13 @@
 addEventListener("fetch", event => {
-  event.respondWith(handleRequest(event.request));
+  const url = new URL(event.request.url);
+
+  // Serve webxr.js if the path matches
+  if (url.pathname === "/webxr.js") {
+    event.respondWith(serveWebXRJS());
+  } else {
+    // Handle all other requests
+    event.respondWith(handleRequest(event.request));
+  }
 });
 
 async function handleRequest(req) {
@@ -18,7 +26,7 @@ async function handleRequest(req) {
 
     console.log("🌐 Received URL:", originalUrl);
     const { siteKey, modelCode } = parseUrl(originalUrl);
-    
+
     console.log(`🔎 Parsed URL -> siteKey: ${siteKey}, modelCode: ${modelCode}`);
 
     if (!siteKey) {
@@ -87,17 +95,28 @@ async function serveHtmlPage(pageUrl) {
 
 async function serveWebXRPage(modelData) {
   console.log("🕶️ Serving WebXR Page with model:", modelData);
+
+  // Fetch the WebXR HTML template
   const xrHtml = await fetch("https://3dmodelsproject.pages.dev/webxr.html");
   let content = await xrHtml.text();
 
+  // Inject the model data into the WebXR template
   content = content.replace("</body>", `
     <script>
       const modelData = ${JSON.stringify(modelData)};
-      const params = new URLSearchParams(window.location.search);
-      params.set("model", encodeURIComponent(JSON.stringify(modelData)));
-      window.history.replaceState({}, "", "?" + params.toString());
+      console.log("🔍 Model data passed to WebXR:", modelData);
     </script>
+    <script src="/webxr.js"></script>
   </body>`);
 
+  // Return the WebXR content as an HTML page
   return new Response(content, { headers: { "Content-Type": "text/html" } });
+}
+
+async function serveWebXRJS() {
+  // Fetch the webxr.js file from the origin
+  const jsResponse = await fetch("https://3dmodelsproject.pages.dev/webxr.js");
+  return new Response(jsResponse.body, {
+    headers: { "Content-Type": "application/javascript" }
+  });
 }
